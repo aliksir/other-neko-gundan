@@ -1,5 +1,17 @@
 # Neko Gundan Rules (for Codex CLI)
 
+## Setup (run once)
+
+If `rules/` or `templates/` directories don't exist in this project, copy them from the source:
+
+```bash
+cp -r C:/work/other-neko-gundan/rules/ ./rules/
+cp -r C:/work/other-neko-gundan/templates/ ./templates/
+mkdir -p _deleted plans result
+```
+
+All rule references below point to files in `rules/` and `templates/`. These must exist locally.
+
 ## Quality Rules
 
 This project uses the neko-gundan quality rule set. Before any implementation:
