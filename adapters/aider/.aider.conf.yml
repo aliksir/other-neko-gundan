@@ -1,0 +1,6 @@
+# Neko Gundan quality rules for Aider
+read:
+  - rules/review-protocol.md
+  - rules/safety-tiers.md
+  - rules/completion-gates.md
+conventions-file: conventions.md
