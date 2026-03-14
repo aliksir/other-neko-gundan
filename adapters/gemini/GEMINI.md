@@ -5,8 +5,9 @@
 If `rules/` or `templates/` directories don't exist in this project, copy them from the source:
 
 ```bash
-cp -r C:/work/other-neko-gundan/rules/ ./rules/
-cp -r C:/work/other-neko-gundan/templates/ ./templates/
+# From the other-neko-gundan repo root:
+cp -r <path-to-other-neko-gundan>/rules/ ./rules/
+cp -r <path-to-other-neko-gundan>/templates/ ./templates/
 mkdir -p _deleted plans result
 ```
 
