@@ -10,8 +10,8 @@ This project uses the neko-gundan quality rule set. Before any implementation:
 
 ## On Every Task
 
-- Create a plan before coding (see `templates/plan.md`)
-- Create a checklist (see `templates/checklist.md`)
+- For non-trivial tasks (3+ files, design decisions), create a plan before coding (see `templates/plan.md` and `rules/process-weight.md` for when to skip)
+- For non-trivial tasks, create a checklist (see `templates/checklist.md`)
 - Run completion gate checks before declaring done
 - Record failures with Reflexion format (see `rules/reflexion.md`)
 
