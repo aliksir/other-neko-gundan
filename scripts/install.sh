@@ -63,6 +63,11 @@ safe_copy() {
   local dst="$2"
 
   if [ -e "$dst" ]; then
+    if [ ! -t 0 ]; then
+      # Non-interactive (CI/piped): skip existing files without hanging
+      warn "Skipped (non-interactive): $dst"
+      return 0
+    fi
     printf "[neko-gundan] '%s' already exists. Overwrite? [y/N] " "$dst"
     read -r answer
     case "$answer" in
@@ -85,7 +90,7 @@ safe_copy_dir() {
 
   # Find all files inside src_dir
   while IFS= read -r -d '' file; do
-    relative="${file#$src_dir/}"
+    local relative="${file#$src_dir/}"
     safe_copy "$file" "$dst_dir/$relative"
   done < <(find "$src_dir" -type f -print0)
 }
