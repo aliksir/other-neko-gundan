@@ -64,6 +64,7 @@ These items are added to the gate when the corresponding module is enabled.
 | 13 | reflexion | Failure reflection recorded (if applicable) | Reflexion section in report |
 | 14 | progress_visibility | Dashboard finalized | `status/dashboard.md` has final status, "Mission: COMPLETE" |
 | 15 | audit_trail | Audit trail recorded | Traceability: all REQs VERIFIED or DEFERRED. Approvals logged. Changes logged. Summary generated. |
+| 16 | test_plan | Test plan completed | Test plan matrix exists, all unit test items (normal + abnormal) and integration test items checked. `[N/A]` if no code changes (docs/config only) |
 
 ## Process Weight Variants
 
