@@ -11,13 +11,28 @@ Execute before starting any mission. The gate is **not complete until all artifa
 | # | Check | How to verify |
 |---|-------|---------------|
 | 1 | Task scope is clear | Purpose + success criteria defined |
-| 2 | Target files identified | File list exists |
-| 3 | No unresolved blockers | Check dashboard/whiteboard |
-| 4 | Current state understood | Read target files, `git status` |
-| 5 | Plan document created | `plans/{project}_*.md` exists with scope, steps, success criteria |
-| 6 | QA/Work checklist created | `checklist/{date}_{project}.md` exists with work items + QA items derived from the plan |
-| 7 | Dashboard initialized (multi-agent) | `status/dashboard.md` populated with What/Why/Who/Constraints/Current State |
-| 8 | **Artifact existence confirmed** | `ls` confirms plan + checklist (+ dashboard for multi-agent) all exist. **Gate incomplete until all artifacts are present** |
+| 2 | New or existing project? | Check your project list to confirm. New project = will add to list at completion. Existing = will update version at completion |
+| 3 | Target files identified | File list exists |
+| 4 | No unresolved blockers | Check dashboard/whiteboard |
+| 5 | Current state understood | Read target files, `git status` |
+| 6 | Plan document created | `plans/{project}_*.md` exists with scope, steps, success criteria |
+| 7 | QA/Work checklist created | `checklist/{date}_{project}.md` exists with work items + QA items derived from the plan |
+| 8 | Dashboard initialized (multi-agent) | `status/dashboard.md` populated with What/Why/Who/Constraints/Current State |
+| 9 | **Artifact existence confirmed** | `ls` confirms plan + checklist (+ dashboard for multi-agent) all exist. **Gate incomplete until all artifacts are present** |
+
+## Pre-Report Checkpoint (Before Saying "Done" — Fires Unconditionally)
+
+Regardless of scale or process weight, always run through this checkpoint before reporting completion to the commander.
+
+| # | Check | How to verify |
+|---|-------|---------------|
+| 1 | **Request vs. result match** | Does what you actually did match what was requested? |
+| 2 | **Evidence of working** | Not "I did it" but "here's proof it works" (command output, file existence, test results) |
+| 3 | **Project list update** | New project → add to your project list. Existing project → update version info to match the work done |
+
+\#1-2 are mental checks. #3 requires action.
+
+---
 
 ## Completion Gate (Before Saying "Done")
 
@@ -38,7 +53,7 @@ At the completion gate, verify:
 2. The checklist file exists in the configured output directory
 3. Task-specific review items have been verified by the reviewer agent
 
-### Gate Items (7 core + module additions)
+### Gate Items (8 core + module additions)
 
 | # | Check | How to verify | Evidence format |
 |---|-------|---------------|--------------------|
@@ -49,6 +64,7 @@ At the completion gate, verify:
 | 5 | No uncommitted new files | `git status` | Status output showing clean state |
 | 6 | Existing features not broken | Run full test suite or smoke test | Test results |
 | 7 | Files not accidentally deleted | Compare with start state | `git status` / file listing |
+| 8 | Project list updated | Pre-Report Checkpoint #3 completed: new project added to list, or existing project version updated | Project list diff |
 
 ### Module-Specific Gate Items (When Active)
 
@@ -56,15 +72,15 @@ These items are added to the gate when the corresponding module is enabled.
 
 | # | Module | Check | How to verify |
 |---|--------|-------|---------------|
-| 8 | whiteboard | Whiteboard archived | Move to archive, update dashboard |
-| 9 | checklist_export | All checklist items PASS/N/A | Checklist file verified, no unchecked items |
-| 10 | quality_metrics | Metrics updated | Metrics file updated with current task |
-| 11 | isv | ISV recorded | Result dimensions filled, appended to ISV log |
-| 12 | linter_protection | No linter config weakened | Diff shows no linter rule removals |
-| 13 | reflexion | Failure reflection recorded (if applicable) | Reflexion section in report |
-| 14 | progress_visibility | Dashboard finalized | `status/dashboard.md` has final status, "Mission: COMPLETE" |
-| 15 | audit_trail | Audit trail recorded | Traceability: all REQs VERIFIED or DEFERRED. Approvals logged. Changes logged. Summary generated. |
-| 16 | test_plan | Test plan completed | Test plan matrix exists, all unit test items (normal + abnormal) and integration test items checked. `[N/A]` if no code changes (docs/config only) |
+| 9 | whiteboard | Whiteboard archived | Move to archive, update dashboard |
+| 10 | checklist_export | All checklist items PASS/N/A | Checklist file verified, no unchecked items |
+| 11 | quality_metrics | Metrics updated | Metrics file updated with current task |
+| 12 | isv | ISV recorded | Result dimensions filled, appended to ISV log |
+| 13 | linter_protection | No linter config weakened | Diff shows no linter rule removals |
+| 14 | reflexion | Failure reflection recorded (if applicable) | Reflexion section in report |
+| 15 | progress_visibility | Dashboard finalized | `status/dashboard.md` has final status, "Mission: COMPLETE" |
+| 16 | audit_trail | Audit trail recorded | Traceability: all REQs VERIFIED or DEFERRED. Approvals logged. Changes logged. Summary generated. |
+| 17 | test_plan | Test plan completed | Test plan matrix exists, all unit test items (normal + abnormal) and integration test items checked. `[N/A]` if no code changes (docs/config only) |
 
 ## Process Weight Variants
 
@@ -73,7 +89,7 @@ Completion gate scope varies by process weight (see `rules/process-weight.md`):
 | Weight | Gate Scope | Review |
 |--------|-----------|--------|
 | **Light** | Quick gate: items #1, #2, #5 only | Self-check allowed |
-| **Standard** | Full gate: all core items (#1-#7) + active module items | Independent reviewer required |
+| **Standard** | Full gate: all core items (#1-#8) + active module items | Independent reviewer required |
 | **Strict** | Full gate + ensemble judge + mandatory ISV | Independent reviewer + ensemble |
 
 Default is **Standard** unless specified otherwise.
