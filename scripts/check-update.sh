@@ -55,7 +55,7 @@ local_ver=""
 if [ -f "$REPO_DIR/VERSION" ]; then
     local_ver=$(cat "$REPO_DIR/VERSION" | tr -d '[:space:]')
 elif [ -f "$REPO_DIR/CHANGELOG.md" ]; then
-    local_ver=$(grep -oP '## \[?\Kv?[0-9]+\.[0-9]+\.[0-9]+' "$REPO_DIR/CHANGELOG.md" 2>/dev/null | head -1 || echo "")
+    local_ver=$(grep -o '## \[*[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\|## \[*v[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*' "$REPO_DIR/CHANGELOG.md" 2>/dev/null | head -1 | sed 's/^## \[*v*//' || echo "")
 fi
 
 # バージョン取得できなければ git describe で代替
@@ -72,7 +72,7 @@ if [ -z "$remote_json" ]; then
     die_silent
 fi
 
-remote_ver=$(echo "$remote_json" | grep -oP '"tag_name"\s*:\s*"v?\K[0-9]+\.[0-9]+\.[0-9]+' || echo "")
+remote_ver=$(echo "$remote_json" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"v*[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*"' | sed 's/.*"v*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)".*/\1/' || echo "")
 if [ -z "$remote_ver" ]; then
     echo "up-to-date" > "$CACHE_FILE"
     die_silent
