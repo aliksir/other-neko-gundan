@@ -19,6 +19,17 @@ The "implementer != reviewer" principle has one defined exception:
 
 All other principles (reviewer is read-only, loop limit 3) apply regardless of process weight.
 
+## Scope Bind Rule (Sprint Contract)
+
+Reviewers judge pass/fail ONLY against the plan's "acceptance criteria" (Sprint Contract).
+
+- **Don't fail on criteria not in the contract**: Prevent scope creep ("this could also be improved")
+- **Judge only what's in the contract**: Each criterion is PASS/FIX binary. All PASS = approved
+- **Issues found outside contract**: Don't fail the review. Report via OBJECTION separately. Fix in next task
+- **No acceptance criteria defined**: Use the plan's "success criteria" as substitute. If neither exists, request definition before starting review
+- **Verifiability check**: Each criterion must have a stated verification method (command output, file check, browser/CLI result). Criteria without verification methods cannot be PASS/FIX judged — request plan completion before review. Inspired by Hyperagents (arxiv:2603.19461) "Evaluate on computable tasks"
+- **Fuzzy words prohibited in criteria**: Words like "good", "appropriate", "sufficient", "clean", "correct", "readable", "efficient", "optimal", "stable", "high-quality", "user-friendly", "problem-free" make criteria unjudgeable. Replace with specific, measurable conditions
+
 ## Flow
 
 ```
