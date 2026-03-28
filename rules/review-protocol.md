@@ -41,6 +41,30 @@ implement -> review(edit:false) -> [issues found] -> fix -> review -> ... (max 3
 
 During fix phases, don't carry over previous session responses. Share information via review report files.
 
+## External Tool Results Integration
+
+Before the reviewer's rubric judgment, input the following external tool results as structured data:
+- lint/type check results
+- test results (pass/fail/coverage)
+- security scan results (gitleaks, semgrep, etc.)
+
+Eliminate "gut feeling LGTM" by requiring tool evidence.
+
+### SAST Pre-injection Effectiveness (2026-03-28, arxiv:2602.16741)
+
+In 8-model × 9,000-trial experiments, injecting SAST results before review recovered 47% of baseline failures, reaching 96.9% detection rate. Commercial models (including Claude) maintain 89-96% detection accuracy against adversarial comment injection, but the remaining 4-11% miss rate means SAST supplementation is mandatory for security-relevant PRs.
+
+- **Required**: For security-impacting PRs, include betterleaks/semgrep/trivy scan results in reviewer input before starting review
+- **Two-stage verification**: SAST pre-injection → JiTTests boundary value supplementation is the most effective pipeline
+
+## Blind Review Principle (2026-03-28, arxiv:2603.18740)
+
+LLM reviewers are influenced by PR description/commit message framing ("this is a bug fix", "this is safe"), reducing vulnerability detection by up to 93% (confirmation bias). In autonomous agent mode, attack success rate reaches 88%.
+
+- **Diff-first evaluation**: Reviewers must evaluate code diff before reading PR descriptions/commit messages. Record preliminary evaluation, then cross-reference with description
+- **Metadata removal**: For security-related reviews, intentionally hide committer info and PR descriptions ("blind review mode")
+- **Autonomous agent caution**: When passing instructions to the reviewer agent, do not include implementer claims ("tests pass") verbatim. Pass only facts (test execution logs)
+
 ## Agent-as-a-Judge (Structured Review)
 
 The reviewer agent uses a rubric with 5 aspects: correctness, safety, maintainability, testing, purpose alignment.
