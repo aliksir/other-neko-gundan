@@ -94,7 +94,13 @@ Based on research (arxiv:2602.07900): AI-generated tests tend to mimic habits ov
 
 - **Assert-first**: Every test must contain formal assertions. Print-only tests are invalid
 - **Quality over quantity**: Design few, precise tests targeting boundary values and edge cases
-- **Reduction is OK**: Cutting test count is acceptable (impact is ~-2%)
+- **Error case tests required (2026-03-28)**: Test plans must include error/edge case categories. Test plans with only happy-path tests are incomplete and must be returned for revision:
+  - **Invalid input**: null/undefined, empty string, wrong type, out-of-range values
+  - **Boundary values**: min, max, zero, negative, upper limit + 1
+  - **Error handling**: API failure, network error, timeout
+  - **Auth/permissions**: unauthenticated, insufficient privileges, expired token (if applicable)
+  - **Concurrency**: simultaneous execution, race conditions (if applicable)
+- **Reduction is OK**: Cutting test count is acceptable (impact is ~-2%). However, reducing error case categories to zero is not allowed
 - **Adversarial testing recommended**: Mutation-testing approach — deliberately inject bugs, verify tests catch them
 
 ## Structural Hints for Complex Code
