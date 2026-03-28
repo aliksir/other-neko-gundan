@@ -41,6 +41,30 @@ implement -> review(edit:false) -> [issues found] -> fix -> review -> ... (max 3
 
 During fix phases, don't carry over previous session responses. Share information via review report files.
 
+## External Tool Results Integration
+
+Before the reviewer's rubric judgment, input the following external tool results as structured data:
+- lint/type check results
+- test results (pass/fail/coverage)
+- security scan results (gitleaks, semgrep, etc.)
+
+Eliminate "gut feeling LGTM" by requiring tool evidence.
+
+### SAST Pre-injection Effectiveness (2026-03-28, arxiv:2602.16741)
+
+In 8-model × 9,000-trial experiments, injecting SAST results before review recovered 47% of baseline failures, reaching 96.9% detection rate. Commercial models (including Claude) maintain 89-96% detection accuracy against adversarial comment injection, but the remaining 4-11% miss rate means SAST supplementation is mandatory for security-relevant PRs.
+
+- **Required**: For security-impacting PRs, include betterleaks/semgrep/trivy scan results in reviewer input before starting review
+- **Two-stage verification**: SAST pre-injection → JiTTests boundary value supplementation is the most effective pipeline
+
+## Blind Review Principle (2026-03-28, arxiv:2603.18740)
+
+LLM reviewers are influenced by PR description/commit message framing ("this is a bug fix", "this is safe"), reducing vulnerability detection by up to 93% (confirmation bias). In autonomous agent mode, attack success rate reaches 88%.
+
+- **Diff-first evaluation**: Reviewers must evaluate code diff before reading PR descriptions/commit messages. Record preliminary evaluation, then cross-reference with description
+- **Metadata removal**: For security-related reviews, intentionally hide committer info and PR descriptions ("blind review mode")
+- **Autonomous agent caution**: When passing instructions to the reviewer agent, do not include implementer claims ("tests pass") verbatim. Pass only facts (test execution logs)
+
 ## Agent-as-a-Judge (Structured Review)
 
 The reviewer agent uses a rubric with 5 aspects: correctness, safety, maintainability, testing, purpose alignment.
@@ -70,7 +94,13 @@ Based on research (arxiv:2602.07900): AI-generated tests tend to mimic habits ov
 
 - **Assert-first**: Every test must contain formal assertions. Print-only tests are invalid
 - **Quality over quantity**: Design few, precise tests targeting boundary values and edge cases
-- **Reduction is OK**: Cutting test count is acceptable (impact is ~-2%)
+- **Error case tests required (2026-03-28)**: Test plans must include error/edge case categories. Test plans with only happy-path tests are incomplete and must be returned for revision:
+  - **Invalid input**: null/undefined, empty string, wrong type, out-of-range values
+  - **Boundary values**: min, max, zero, negative, upper limit + 1
+  - **Error handling**: API failure, network error, timeout
+  - **Auth/permissions**: unauthenticated, insufficient privileges, expired token (if applicable)
+  - **Concurrency**: simultaneous execution, race conditions (if applicable)
+- **Reduction is OK**: Cutting test count is acceptable (impact is ~-2%). However, reducing error case categories to zero is not allowed
 - **Adversarial testing recommended**: Mutation-testing approach — deliberately inject bugs, verify tests catch them
 
 ## Structural Hints for Complex Code
