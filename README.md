@@ -62,7 +62,8 @@ Core quality protocols — read these before starting any task.
 | `jit-tests.md` | Just-in-Time disposable tests generated from git diff |
 | `spec-driven-review.md` | Verify changes align with project spec, not just "does it work" |
 | `whiteboard.md` | Cross-agent (or cross-session) shared knowledge file |
-| `raw-log.md` | Append-only session log for context persistence |
+| `raw-log.md` | Full audit trail of every agent action (1-line-per-action format) |
+| `review-output.md` | Persist review results (simplify, reviewer) to files for traceability |
 | `fides.md` | Data trust levels (HIGH / MEDIUM / LOW) and promotion procedure |
 | `race-prevention.md` | File conflict prevention when multiple agents work in parallel |
 

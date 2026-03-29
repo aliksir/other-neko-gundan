@@ -6,6 +6,8 @@
 
 Full audit trail of every agent action — what was read, changed, executed, and decided. For engineers who want to see **exactly** what the agent did, not just the summary.
 
+"What did you check before saying done?"
+
 ## Why
 
 Completion gates prove **what was checked**. Raw logs prove **what was done**. When you need to explain every line change to a stakeholder, the report isn't enough — you need the full diff, every command output, and the reasoning behind each decision.
@@ -20,59 +22,67 @@ logs/raw-{mission-name}-{YYYYMMDD}.md
 
 ## Output Format
 
+Record every tool call at the same granularity as a context viewer.
+**No summaries. No omissions. All entries recorded.**
+
 ```markdown
 # Raw Log: {Mission Name}
 **Date**: YYYY-MM-DD HH:MM
 **Scale**: {squad/platoon/battalion}
 **Team**: {agent list}
 
-## {agent-name}
+## Actions
 
-### [{HH:MM:SS}] Read {file_path}
-(Read file — {N} lines)
-
-### [{HH:MM:SS}] Edit {file_path}:{line}
-```diff
-- old line
-+ new line
+- Read: C:/work/project/src/main.js (250行)
+- Read: C:/work/project/package.json (32行)
+- Glob: src/**/*.jsx → 8 files
+- Grep: "useState" in src/ → 12 matches in 5 files
+- Edit: C:/work/project/src/main.js L15-20 — import追加
+- Edit: C:/work/project/src/main.js L45-80 — handleSubmit関数書き換え
+- Write: C:/work/project/src/utils/helper.js (新規, 35行)
+- Bash: cd C:/work/project && npm install (exit:0)
+- Bash: cd C:/work/project && npm run build (exit:0)
+- Bash: cd C:/work/project && npm test (exit:1, FAIL: 2/15)
+- Decision: テスト失敗はimportパスの変更漏れ → helper.jsのexportを修正
+- Edit: C:/work/project/src/utils/helper.js L12 — export名修正
+- Bash: cd C:/work/project && npm test (exit:0, PASS: 15/15)
+- SendMessage: → worker-agent-1 "テスト修正完了、再レビュー依頼"
+- Agent: worker-agent-1 (worktree, background) "エッジケーステスト追加"
+- Skill: /simplify → 変更ファイル3件レビュー
 ```
 
-### [{HH:MM:SS}] Bash {command summary}
-```
-{full output}
-```
-exit: {code}
+### 記録ルール
 
-### [{HH:MM:SS}] Search {pattern} in {path}
-{match count} matches in {file count} files
+| ルール | 内容 |
+|--------|------|
+| **全件記録** | Read/Write/Edit/Bash/Grep/Glob/Agent/Skill/MCP等、**全てのツールコールを1件ずつ記録**。省略・まとめ・要約禁止 |
+| **1行1アクション** | `- Read: {path} ({行数})` のようにツール名+対象+結果を1行で。リストマーカー `- ` 付き |
+| **結果を含める** | Bash→exit code、Grep→match数、テスト→pass/fail数 |
+| **失敗も記録** | エラー・リトライ・失敗した試行も全て記録（むしろ重要） |
+| **Decisionは理由付き** | 判断・選択をした箇所は `- Decision:` で理由を1行記録 |
+| **Readも全件** | ファイル読み込みは全て記録。「10ファイル読んだ」ではなく各ファイルを1行ずつ |
 
-### [{HH:MM:SS}] Decision
-{reasoning for a judgment or choice}
-```
+### ツール別フォーマット
 
-### What to Log
-
-| Action | Log content |
-|--------|-------------|
-| **Read** | File path, line count |
-| **Edit** | File path, line number, full diff (unified format) |
-| **Write** | File path, full content |
-| **Command** | Command, full stdout/stderr, exit code |
-| **Search** | Pattern, match count, file count |
-| **Decision** | What was decided and why |
-| **Handoff** | Recipient, summary of message |
-
-### What NOT to Log
-
-- Internal planning thoughts (these are in the whiteboard)
-- Repeated identical reads of the same file (log once)
-- Tool calls that returned empty/no-op results (unless relevant to a decision)
+| Action | Format |
+|--------|--------|
+| **Read** | `- Read: {path} ({N}行)` / `- Read: {path} L{start}-{end}` |
+| **Edit** | `- Edit: {path} L{line} — {何を変えたか}` |
+| **Write** | `- Write: {path} (新規, {N}行)` / `- Write: {path} (上書き, {N}行)` |
+| **Bash** | `- Bash: {command} (exit:{code})` 失敗時は `(exit:{code}, {エラー要約})` |
+| **Grep** | `- Grep: "{pattern}" in {path} → {N} matches in {M} files` |
+| **Glob** | `- Glob: {pattern} → {N} files` |
+| **Decision** | `- Decision: {何を判断したか} → {選んだ結果と理由}` |
+| **SendMessage** | `- SendMessage: → {recipient} "{要約}"` |
+| **Agent** | `- Agent: {name} ({options}) "{task}"` |
+| **Skill** | `- Skill: /{name} → {結果要約}` |
+| **MCP** | `- MCP: {tool_name}({params要約}) → {結果要約}` |
 
 ## Generation Procedure
 
 ### Worker Agent: Record During Work
 
-During execution, keep a structured action list. At handoff time, include it in the completion report:
+During execution, keep a mental note of actions taken. No file writes during work — just remember what you did. At handoff time, include a **structured action list** in your completion report:
 
 ```yaml
 actions:
@@ -80,10 +90,11 @@ actions:
     file: src/checks/inbound.js
     line: 31
     diff: |
-      + new line added
-  - tool: Command
-    command: npm test
-    output: "42 passed, 0 failed"
+      + /\b(?:Invoke-Expression|IEX)\s*[\s(]/i,
+      + /\bStart-Process\b/i,
+  - tool: Bash
+    command: node -e "const {CHECKS}..."
+    output: "IN-002 patterns: 16"
     exit: 0
 ```
 
