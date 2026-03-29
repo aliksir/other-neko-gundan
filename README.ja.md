@@ -61,7 +61,8 @@ bash other-neko-gundan/scripts/install.sh ./your-project
 | `jit-tests.md` | git diffから生成する使い捨てテスト |
 | `spec-driven-review.md` | 「動くか」だけでなく「仕様に合っているか」を検証 |
 | `whiteboard.md` | エージェント間（またはセッション間）の共有知識ファイル |
-| `raw-log.md` | コンテキスト永続化のための追記専用セッションログ |
+| `raw-log.md` | 全エージェントアクションの完全な監査証跡（1行1アクション形式） |
+| `review-output.md` | レビュー結果（simplify、レビュアー）をファイルに永続化 |
 | `fides.md` | データ信頼レベル（HIGH / MEDIUM / LOW）と昇格手順 |
 | `race-prevention.md` | 並列作業時のファイル競合防止 |
 
